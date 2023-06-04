@@ -1,5 +1,4 @@
 <template>
-  <!-- <div class="home"> -->
     <div class="container">
         <div class="left-box" :style="{width:boxWidth}">
             <ul>
@@ -15,38 +14,53 @@
             <div class="top">
                 <span class="current-tag">{{state.currentTag}}</span>
                 <div class="btn">
-                    <i class="icon icon-search"></i>
+                     <add-circle-icon />
                 </div>
-                <div class="btn">
-                     <AddCircleIcon />
-                </div>
+                <t-switch @change="toggleBtn" v-model="checked" size="large" :label="['暗', '亮']"></t-switch>
             </div>
-            <div class="middle">i'm xiaohuihui</div>
+            <div class="middle">
+              <router-view/>
+            </div>
             <div class="handler" @click="closeSide()" :class="{close:isClosed}"></div>
         </div>
     </div>
-  <!-- </div> -->
 </template>
 
 <script setup>
-import { manifest } from 'tdesign-icons-vue-next'
-import { reactive } from 'vue';
-import {ref} from 'vue';
+import { AddCircleIcon,manifest } from 'tdesign-icons-vue-next'
+import { useRoute, useRouter } from 'vue-router';
+import { onMounted,reactive,ref } from 'vue';
 
+
+onMounted(() => {
+    firstset()
+})
+
+// 路由跳转
+const route = useRoute();
+const router = useRouter();
 
 const state = reactive({
-  items:['Item 1','Item 2','Item 3'],
+  items:['首页','历史数据','养殖舍','用户'],
+  itemsvalue:['visual','history','farmed','user'],
   activeIndex:null,
-  currentTag:'',
+  currentTag:'首页',
 });
-
-const isClosed = ref(false);
-const boxWidth = ref('250px');
-
+//   防止刷新后侧边栏选项对应不准确
+function firstset(){
+    state.activeIndex = state.itemsvalue.indexOf(route.meta.title)
+    state.currentTag = state.items[state.activeIndex]
+}
+// 点击跳转
 function setActive(index){
   state.activeIndex = index;
   state.currentTag = state.items[index];
+  router.push('/'+state.itemsvalue[index]);
 }
+
+// 侧边栏关闭
+const isClosed = ref(false);
+const boxWidth = ref('250px');
 function closeSide(){
   if(!isClosed.value){
     boxWidth.value = '0';
@@ -54,6 +68,19 @@ function closeSide(){
   }else{
     boxWidth.value = '250px';
     isClosed.value = false;
+  }
+}
+
+// 暗亮色转换
+const checked = ref(false);
+function toggleBtn(){
+    console.log(checked.value);
+  if (checked.value) {
+      // 设置暗色模式
+    document.documentElement.setAttribute('theme-mode', 'dark');
+  }else{
+      // 重置为浅色模式
+    document.documentElement.removeAttribute('theme-mode');
   }
 }
 
@@ -83,7 +110,7 @@ body{
 }
 /* 字体图标 */
 .icon{
-    color: #fff;
+    color: var(--td-text-color-primary);
     font-size: 24px;
 }
 /* 左侧导航栏 */
@@ -91,12 +118,12 @@ body{
     width: 250px;
     height: 100%;
     /* 半透明背景 */
-    background-color: rgba(0,0,0,0.65);
+    background-color: var(--td-bg-color-container);
     /* 背景模糊（毛玻璃） */
     backdrop-filter: blur(30px);
     /* 相对定位 */
     position: relative;
-    color: #fff;
+    color: var(--td-text-color-primary);
     font-size: 14px;
     /* 弹性布局 垂直排列 */
     display: flex;
@@ -127,23 +154,23 @@ body{
 /* 选中态样式 */
 .left-box li.active,
 .left-box li.active:hover{
-    background-color: rgba(255,255,255,0.2);
+    background-color: var(--td-bg-color-container-active);
 }
 .left-box li:hover{
-    background-color: rgba(255,255,255,0.1);
+    background-color: var(--td-bg-color-container-hover);
 }
 .left-box hr{
     width: 90%;
     margin: 18px auto;
     border: none;
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid var(--td-bg-color-container-active);
 }
 .left-box .icon{
     margin-right: 16px;
 }
 /* 用户信息区域 */
 .user-info{
-    border-top: 1px solid rgba(255,255,255,0.2);
+    border-top: 1px solid var(--td-bg-color-container-active);
     display: flex;
     align-items: center;
     padding: 24px;
@@ -164,21 +191,22 @@ body{
 }
 /* 右侧区域 */
 .right-box{
-    background-color: #0f0f11;
+    background-color: var(--td-bg-color-secondarycomponent);
     flex: 1;
     position: relative;
     display: flex;
     flex-direction: column;
 }
 .right-box .top{
-    margin: 25px 35px;
+    padding: 25px 35px;
     display: flex;
     align-items: center;
     height: 46px;
+    background-color: var(--td-bg-color-secondarycontainer-hover);
 }
 .right-box .top .current-tag{
     flex: 1;
-    color: #fff;
+    color: var(--td-text-color-primary);
     font-weight: 600;
 }
 .right-box .top .btn{
@@ -190,18 +218,20 @@ body{
     border-radius: 50%;
 }
 .right-box .top .btn:last-child{
-    background-color: #446dff;
+    /* background-color: var(--td-brand-color-6); */
     margin-left: 20px;
 }
 .right-box .middle{
     flex: 1;
     display: flex;
-    justify-content: center;
+    color: var(--td-text-color-primary);
+    overflow: auto;
+    padding: 25px;
+    /* justify-content: center;
     align-items: center;
-    color: #222;
     font-size: 6vw;
     font-weight: bold;
-    text-transform: uppercase;
+    text-transform: uppercase; */
 }
 /* 展开收起开关 */
 .right-box .handler{
@@ -223,7 +253,7 @@ body{
 .right-box .handler::before,
 .right-box .handler::after{
     content: "";
-    background-color: rgba(255,255,255,0.2);
+    background-color: var(--td-bg-color-component-active);
     position: absolute;
     left: 0;
     width: 100%;
