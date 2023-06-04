@@ -1,20 +1,68 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../pages/HomeView.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: HomeView
+    name: "VisualTable",
+    redirect: '/visual',
   },
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  // }
+  {
+    path: '/login',
+    name: "login",
+    //*设置相应元信息
+    meta: {
+      title: 'login',
+    },
+    component: () => import("../pages/LoginView.vue"),
+  },
+  {
+    path: '/',
+    name: 'home',
+    //*设置相应元信息
+    meta: {
+      title: 'home',
+    },
+    component: HomeView,
+    children: [
+      {
+        path: '/visual',
+        //*设置对应组件
+        component: () => import("../views/VisualTable.vue"),
+        //*设置相应元信息
+        meta: {
+            title: 'visual',
+        },
+      },
+      {
+        path: '/history',
+        //*设置对应组件
+        component: () => import("../views/HistoryTable.vue"),
+        //*设置相应元信息
+        meta: {
+            title: 'history',
+        },
+      },
+      {
+        path: '/farmed',
+        //*设置对应组件
+        component: () => import("../views/FarmedTable.vue"),
+        //*设置相应元信息
+        meta: {
+            title: 'farmed',
+        },
+      },
+      {
+        path: '/user',
+        //*设置对应组件
+        component: () => import("../views/UserDate.vue"),
+        //*设置相应元信息
+        meta: {
+            title: 'user',
+        },
+      },
+    ]
+  },
 ]
 
 const router = createRouter({
