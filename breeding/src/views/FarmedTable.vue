@@ -32,8 +32,14 @@ import {
   CheckCircleFilledIcon,
   CloseCircleFilledIcon,
 } from "tdesign-icons-vue-next";
-const list = ref([
+const list =ref([
   {
+    name: "张三",
+    type: "男",
+    equipment: "24",
+    create_time: "2023.04.03",
+    incubation_period: "是",
+  },{
     name: "张三",
     type: "男",
     equipment: "24",
@@ -42,11 +48,11 @@ const list = ref([
   },
 ]);
 const columns = ref([
-  { title: "名字", colkey: "name" },
-  { title: "分类", colkey: "type" },
-  { title: "设备", colkey: "equipment" },
-  { title: "创建时间", colkey: "create_time" },
-  { title: "是否育成期", colkey: "incubation_period" },
+  { title: "名字", colKey: "name" },
+  { title: "分类", colKey: "type" },
+  { title: "设备", colKey: "equipment" },
+  { title: "创建时间", colKey: "create_time" },
+  { title: "是否育成期", colKey: "incubation_period" },
 ]);
 
 const tableLayout = ref("fixed");

@@ -30,9 +30,9 @@ const tableData = ref([
   {name:"李四",gender:"男",age:"16"},
 ])
 const columns = ref([
-  {title:"姓名",key:"name"},
-  {title:"性别",key:"gender"},
-  {title:"年龄",key:"age"}
+  {title:"姓名",colKey:"name"},
+  {title:"性别",colKey:"gender"},
+  {title:"年龄",colKey:"age"}
 ])
 
 
