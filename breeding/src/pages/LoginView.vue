@@ -44,7 +44,8 @@
 </template>
 
 <script setup>
-import {ref,reactive} from 'vue';
+
+import { ref,reactive } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { login,register,getRegCode } from '../apis/userapi'
 
