@@ -40,6 +40,8 @@ const tableLayout = ref("fixed");
 const emptyData = ref(false);
 
 const tableRef = ref(null);
+
+
 </script>
 <style  scoped>
 .tdesign-demo-block-column {
