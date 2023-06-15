@@ -48,6 +48,8 @@
 import { ref,reactive } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
 import { login,register,getRegCode } from '../apis/userapi'
+import { setlocal } from '../utils/localStorage'
+import { useRouter } from 'vue-router';
 
 // 判断对象中的值是否包含空
 function hasEmptyValue(obj) {
@@ -59,6 +61,7 @@ const loginform = reactive({
     password:""
 })
 
+const router = useRouter();
 function submitlogin(){
     console.log(loginform);
     console.log(hasEmptyValue(loginform));
@@ -68,6 +71,8 @@ function submitlogin(){
         login(loginform).then(res=>{
             console.log(res);
             MessagePlugin.success('提交成功')
+            setlocal('token',res.data.token)
+            router.push('/');
         })
     }
 }
