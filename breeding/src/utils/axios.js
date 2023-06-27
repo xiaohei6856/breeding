@@ -28,14 +28,14 @@ http.interceptors.response.use(function (response) {
   // loadingObj.close()
     const data = response.data
     if(data.code==20001){
-      MessagePlugin.error(data||"账户未登录")
+      MessagePlugin.error(data.message||"账户未登录")
         router.push({
           path:'/login'
         })
         // 请求出错 
         return data
     }else if(data.code!=20000){
-      MessagePlugin.error(data||"服务器出错")
+      MessagePlugin.error(data.message||"服务器出错")
       // 请求出错 
       return data
     }

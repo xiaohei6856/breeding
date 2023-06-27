@@ -5,7 +5,36 @@
             <!-- 注册 -->
             <div :class="{'register-box':true,hidden: !isRegister}">
                 <h1>register</h1>
-                <input type="email" placeholder="邮箱" v-model="registerform.email">
+                <t-form labelWidth="0"  v-if="emailshow" ref="captcharef" :data="registerform" :colon="true" @submit="submitcaptcha">
+                    <t-form-item name="email">
+                        <t-input v-model="registerform.email" type="text" placeholder="邮箱" ></t-input>
+                    </t-form-item>
+                    <t-form-item>
+                        <t-button  style="width:100% !important" type="submit" block>申请验证码</t-button>
+                    </t-form-item>
+                </t-form>
+                <t-form  labelWidth="0" v-else ref="registerref" :data="registerform" :colon="true" @submit="submitregister">
+                    <t-form-item   name="nickname">
+                        <t-input v-model="registerform.nickname" type="text" placeholder="昵称"></t-input>
+                    </t-form-item>
+                    <t-form-item  name="password">
+                        <t-input v-model="registerform.password" type="password" placeholder="密码"></t-input>
+                    </t-form-item>
+                    <t-form-item  name="rePassword">
+                        <t-input v-model="registerform.rePassword" type="password" placeholder="确认密码"></t-input>
+                    </t-form-item>
+                      <t-form-item  name="captcha">
+                        <t-input v-model="registerform.captcha" type="text" placeholder="验证码" clearable></t-input>
+                    </t-form-item>
+                    <t-form-item  name="permitCode">
+                        <t-input v-model="registerform.permitCode" type="text" placeholder="注册授权码"></t-input>
+                    </t-form-item>
+                    <t-form-item>
+                        <t-button @click="emailshow=true" block>返回</t-button>
+                        <t-button  type="submit" block>注册</t-button>
+                    </t-form-item>
+                </t-form>
+                <!-- <input type="email" placeholder="邮箱" v-model="registerform.email">
                 <div style="display:flex;align-items: center;justify-content: center;">
                     <input type="text" placeholder="验证码" v-model="registerform.captcha">
                     <button style="margin:0;" @click="getcaptcha">申请验证码</button>
@@ -15,12 +44,12 @@
                 <input type="password" placeholder="密码" v-model="registerform.password">
                 <input type="password" placeholder="确认密码" v-model="registerform.rePassword">
                 <input type="text" placeholder="注册授权码" v-model="registerform.permitCode">
-                <button @click="submitregister">注册</button>
+                <button @click="submitregister">注册</button> -->
             </div>
             <!-- 登录 -->
             <div :class="{'login-box':true,hidden: isRegister}">
                 <h1>login</h1>
-                <input type="text" placeholder="用户名"  v-model="loginform.username">
+                <input type="text" placeholder="邮箱"  v-model="loginform.username">
                 <input type="password" placeholder="密码" v-model="loginform.password">
                 <button @click="submitlogin">登录</button>
             </div>
@@ -69,8 +98,7 @@ function submitlogin(){
         MessagePlugin.error('请填写完整')
     }else{
         login(loginform).then(res=>{
-            console.log(res);
-            MessagePlugin.success('提交成功')
+            MessagePlugin.success('登陆成功')
             setlocal('token',res.data.token)
             router.push('/');
         })
@@ -78,7 +106,6 @@ function submitlogin(){
 }
 
 const registerform = reactive({
-    username:"",
     password:"",
     captcha: "",
     email: "",
@@ -86,15 +113,28 @@ const registerform = reactive({
     permitCode: "",
     rePassword: "",
 })
+
+const emailshow = ref(true);
+
 function validateEmail() {
       const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
       return emailRegex.test(registerform.email);
 }
-function getcaptcha(){
-    if (condition) {
-        
+const captcharef = ref(null);
+function submitcaptcha(){
+    if (validateEmail()) {
+        console.log(registerform.email);
+        getRegCode({email:registerform.email}).then(
+            res=>{
+                console.log('getRegCode',res);
+                emailshow.value = false;
+            }
+        )
+    }else{
+        return MessagePlugin.error('请输入正确的邮箱')
     }
 }
+const registerref = ref(null);
 function submitregister(){
     console.log(registerform);
     if (hasEmptyValue(registerform))
@@ -106,7 +146,20 @@ function submitregister(){
     if (!validateEmail()) 
         return  MessagePlugin.error('请输入正确的邮箱')
 
-    MessagePlugin.success('提交成功')
+    registerform.username = registerform.email
+    register(registerform).then(
+        res=>{
+            console.log(res);
+            if (res.success) {
+                loginform.username = registerform.email
+                loginform.password = registerform.password
+                gologin()
+            }else if(res.message = '用户名已被注册'){
+                registerref.value.reset();
+                emailshow = true
+            }
+        }
+    )
 }
 
 const formTransform = ref('translateX(0%)');
@@ -164,6 +217,8 @@ function goregister(){
     /* 动画过渡 加速后减速 */
     transition: 0.5s ease-in-out;
 }
+
+
 .register-box,.login-box{
     /* 弹性布局 垂直排列 */
     display: flex;
@@ -184,6 +239,7 @@ h1{
     /* 字间距 */
     letter-spacing: 5px;
 }
+
 input{
     background-color: transparent;
     width: 70%;
@@ -196,6 +252,28 @@ input{
     margin: 8px 0;
     font-size: 14px;
     letter-spacing: 2px;
+}
+:deep(.form-box .t-input){
+    border: none !important;
+    margin: 5px 0;
+    /* 下边框样式 */
+    border-bottom: 1px solid rgba(255,255,255,0.4) !important;
+    background-color: transparent !important;
+}
+:deep(.form-box .t-input input){
+    color: #fff !important;
+}
+:deep(.form-box .t-input input::placeholder){
+   color: #fff !important;
+}
+:deep(.form-box .t-input input:focus){
+    color: #a262ad ;
+    outline: none;
+    /* border-bottom: 1px solid #a262ad80 ; */
+    transition: 0.5s;
+}
+:deep(.form-box .t-input input:focus::placeholder){
+    opacity: 0 ;
 }
 input::placeholder{
     color: #fff;
