@@ -29,8 +29,7 @@ import {post} from "../utils/axios"
  */
  export const getRegCode = function(data) { 
     return post({
-        url:`/getRegCode`,
-        data
+        url:`/getRegCode?email=${data.email}`,
     })
   }
 
@@ -41,7 +40,6 @@ import {post} from "../utils/axios"
  */
  export const sendPermitCode = function(data) { 
     return post({
-        url:`/sendPermitCode`,
-        data
+        url:`/sendPermitCode?email=${data.email}`,
     })
   }
