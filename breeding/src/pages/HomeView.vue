@@ -6,16 +6,16 @@
             </ul>
             <div class="user-info">
                 <img src="../assets/logo.png" alt="">
-                <span>草帽小子</span>
-                <i class="icon icon-gear"></i>
+                <span>{{username}}</span>
+                <i class="icon icon-gear clicks" @click="goout"><LoginIcon /></i> 
             </div>
         </div>
         <div class="right-box">
             <div class="top">
                 <span class="current-tag">{{state.currentTag}}</span>
-                <div class="btn">
-                     <add-circle-icon />
-                </div>
+                <i class="icon icon-gear clicks" style="margin:0 10px;line-height:20px" @click="handlefullScreen">
+                     <RectangleIcon />
+                </i>
                 <t-switch @change="toggleBtn" v-model="checked" size="large" :label="['暗', '亮']"></t-switch>
             </div>
             <div class="middle">
@@ -27,14 +27,54 @@
 </template>
 
 <script setup>
-import { AddCircleIcon,manifest } from 'tdesign-icons-vue-next'
+import VueJwtDecode from 'vue-jwt-decode'
+import { RectangleIcon,manifest,LoginIcon } from 'tdesign-icons-vue-next'
 import { useRoute, useRouter } from 'vue-router';
+import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted,reactive,ref } from 'vue';
-
+import { removelocal,getlocal } from '../utils/localStorage'
 
 onMounted(() => {
     firstset()
 })
+
+ // 全屏初始状态
+let fullscreen= false
+//全屏模式
+function handlefullScreen(){
+    // 获取文档对象的根元素
+      let element = document.documentElement;
+      // console.log(123);
+      if (fullscreen) {
+        // 设置不同浏览器下的退出全屏模式
+        // -webkit- 兼容chrome 和 safari
+        // -moz- 兼容firefox
+        // -ms- 兼容IE浏览器
+        // -o- 兼容opera
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      } else {
+        // 设置不同浏览器下的进入全屏模式
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.webkitRequestFullScreen) {
+          element.webkitRequestFullScreen();
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+          // IE11
+          element.msRequestFullscreen();
+        }
+      }
+      fullscreen = !fullscreen;
+}
 
 // 路由跳转
 const route = useRoute();
@@ -56,6 +96,12 @@ function setActive(index){
   state.activeIndex = index;
   state.currentTag = state.items[index];
   router.push('/'+state.itemsvalue[index]);
+}
+//退出登录
+function goout(){
+    MessagePlugin.success('退出成功')
+    removelocal('token');
+    router.push('/login');
 }
 
 // 侧边栏关闭
@@ -83,6 +129,14 @@ function toggleBtn(){
     document.documentElement.removeAttribute('theme-mode');
   }
 }
+
+const username = ref(null)
+onMounted(()=>{
+    if(getlocal('token')){
+        let info = VueJwtDecode.decode(getlocal('token'))
+        username.value = info.username
+    }
+})
 
 </script>
 
@@ -112,6 +166,9 @@ body{
 .icon{
     color: var(--td-text-color-primary);
     font-size: 24px;
+}
+.clicks{
+    cursor: pointer;
 }
 /* 左侧导航栏 */
 .left-box{
