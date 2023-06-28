@@ -81,8 +81,8 @@ const route = useRoute();
 const router = useRouter();
 
 const state = reactive({
-  items:['首页','历史数据','养殖舍','用户'],
-  itemsvalue:['visual','history','farmed','user'],
+  items:['首页','历史数据','养殖舍','设备管理','用户'],
+  itemsvalue:['visual','history','farmed','equipment','user'],
   activeIndex:null,
   currentTag:'首页',
 });
@@ -116,6 +116,7 @@ function closeSide(){
     isClosed.value = false;
   }
 }
+
 
 // 暗亮色转换
 const checked = ref(false);

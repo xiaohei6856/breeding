@@ -53,6 +53,15 @@ const routes = [
         },
       },
       {
+        path: '/equipment',
+        //*设置对应组件
+        component: () => import("../views/EquipmentTable.vue"),
+        //*设置相应元信息
+        meta: {
+            title: 'equipment',
+        },
+      },
+      {
         path: '/user',
         //*设置对应组件
         component: () => import("../views/UserDate.vue"),

@@ -5,6 +5,12 @@
 </template>
 
 <style>
+:root{
+  --td-backround-card-color: rgba(255, 255, 255, 0.5);
+}
+:root[theme-mode="dark"]{
+  --td-backround-card-color: rgba(1, 0, 0, 0.5);
+}
 ::-webkit-scrollbar {
   /*整体样式*/
   width: 6px; 
