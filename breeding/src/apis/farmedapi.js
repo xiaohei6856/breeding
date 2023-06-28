@@ -18,9 +18,10 @@ export const farmAdd = function(data){
  * 删除养殖舍
  * @returns 
  */
-export const farmDel = function(){
+export const farmDel = function(params){
     return del({
-        url:`/houses/delete`
+        url:`/houses/delete`,
+        params
     })
 }
 /**

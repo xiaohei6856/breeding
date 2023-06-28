@@ -5,86 +5,250 @@
         <span style="display: inline-block; padding-top: 10px">分类：</span>
       </div>
 
-      <t-select  v-model="selectValue" style="width: 240px; display: inline-block">
-          <t-option v-for="(item,key) in type" :key="key" :value="item" @click="getByTypes">{{item}}</t-option>
-        </t-select>
+      <t-select
+        v-model="findForm.type"
+        style="width: 240px; display: inline-block"
+      >
+        <t-option
+          v-for="(item, key) in type"
+          :key="key"
+          :value="item"
+          @click="getByTypes"
+          >{{ item }}</t-option
+        >
+      </t-select>
+      <t-button theme="primary" style="margin-left: 20px" @click="showAddForm">
+        <template #icon><add-icon /></template>
+        增加
+      </t-button>
+
+      <t-dialog
+        v-model:visible="addFormVisible"
+        header="添加养殖舍"
+        :on-cancel="onCancel"
+        :on-close="close"
+        :on-confirm="addFormButton"
+      >
+        <t-form :data="addForm">
+          <t-form-item label="养殖舍名称">
+            <t-input
+              v-model="addForm.name"
+              placeholder="请输入内容"
+              style="width: 76%"
+            ></t-input>
+          </t-form-item>
+          <t-form-item label="养殖舍类型">
+            <t-select
+              v-model="addForm.type"
+              style="width: 240px; display: inline-block"
+            >
+              <t-option
+                v-for="(item, key) in type"
+                :key="key"
+                :value="item"
+                @click="getByTypes"
+                >{{ item }}</t-option
+              >
+            </t-select>
+          </t-form-item>
+          <t-form-item label="是否育成期">
+            <t-radio-group v-model="addForm.growing">
+              <t-radio value="0">是</t-radio>
+              <t-radio value="1">否</t-radio>
+            </t-radio-group>
+          </t-form-item>
+        </t-form>
+      </t-dialog>
     </t-card>
     <t-card>
-      <t-table
-        row-key="index"
-        :data="list"
-        :columns="columns"
-
-        bordered
-        resizable
-      >
-        <!-- <template #operation="{ row }">
-        <t-link theme="primary" hover="color" @click="rehandleClickOp(row)">
-          {{ row.status === 0 ? "查看详情" : "再次申请" }}
-        </t-link>
-      </template> -->
+      <t-table :columns="columns" :data="list" :rowKey="list.id">
+        <t-column title="名字" colKey="name"></t-column>
+        <t-column title="分类" colKey="type"></t-column>
+        <t-column title="创建时间" colKey="time"></t-column>
+        <t-column title="是否育成期" colKey="growing"></t-column>
+        <t-column title="操作" colKey="operation"></t-column>
+        <template #operation="{ row }">
+          <t-link
+            theme="primary"
+            hover="color"
+            style="width: 50px"
+            @click="delRow(row)"
+          >
+            删除
+          </t-link>
+          <t-link theme="primary" hover="color" @click="updateRow(row);showOperationForm();" >
+            操作
+          </t-link>
+        </template>
       </t-table>
+        <t-dialog
+        v-model:visible="operationFormVisible"
+        header="修改养殖舍"
+        :on-cancel="onCancel"
+        :on-close="close"
+        :on-confirm="addFormButton"
+      >
+        <t-form :data="operationForm">
+          <t-form-item label="养殖舍名称">
+            <t-input
+              v-model="operationForm.name"
+              placeholder="请输入内容"
+              style="width: 76%"
+            ></t-input>
+          </t-form-item>
+          <t-form-item label="养殖舍类型">
+            <t-select
+              v-model="operationForm.type"
+              style="width: 240px; display: inline-block"
+            >
+              <t-option
+                v-for="(item, key) in type"
+                :key="key"
+                :value="item"
+                @click="getByTypes"
+                >{{ item }}</t-option
+              >
+            </t-select>
+          </t-form-item>
+          <t-form-item label="是否育成期">
+            <t-radio-group v-model="operationForm.growing">
+              <t-radio value="0">是</t-radio>
+              <t-radio value="1">否</t-radio>
+            </t-radio-group>
+          </t-form-item>
+        </t-form>
+      </t-dialog>
     </t-card>
   </div>
 </template>
 <script setup>
-import { ref, computed,onMounted,watch} from "vue";
+import { ref, computed, onMounted, watch, reactive } from "vue";
 import {
   ErrorCircleFilledIcon,
   CheckCircleFilledIcon,
   CloseCircleFilledIcon,
+  AddIcon,
 } from "tdesign-icons-vue-next";
 
-import {farmFindAll} from "@/apis/farmedapi";
-import {farmGetTypes} from "@/apis/farmedapi";
+import { farmFindAll, farmAdd ,farmDel,farmFindByType} from "@/apis/farmedapi";
+import { farmGetTypes } from "@/apis/farmedapi";
+import { MessagePlugin } from "tdesign-vue-next";
 
-const list =ref([]);
+const list = ref([]);
 const columns = ref([
   { title: "名字", colKey: "name" },
   { title: "分类", colKey: "type" },
-  { title: "设备", colKey: "type" },
   { title: "创建时间", colKey: "time" },
   { title: "是否育成期", colKey: "growing" },
+  { title: "操作", colKey: "operation", fixed: "right" },
 ]);
 
-const tableLayout = ref("fixed");
-const emptyData = ref(false);
+const type = ref([]);
+// const selectValue = ref("");
+const addFormVisible = ref(false);
+const operationFormVisible = ref(false)
 
-const tableRef = ref(null);
-const type = ref([])
-const selectValue = ref("");
-
+const addForm = reactive({
+  growing: "",
+  name: "",
+  type: "",
+});
+const operationForm = reactive({
+  growing: "",
+  name: "",
+  type: "",
+});
+const findForm = reactive({
+  pageNo:1,
+  pageSize:20,
+  type:""
+})
 // 查询所有数据
 const getHouses = async () => {
-      try {
-        const response = await farmFindAll({})
-        list.value = response.data.list;
-        console.log(response.data.list);
-      } catch (error) {
-        console.log(error)
-      }
-    };
+  try {
+    const response = await farmFindAll({});
+    list.value = response.data.list;
+    console.log(response.data.list);
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 // 查询所有类型
-const getAllType = async() =>{
+const getAllType = async () => {
   try {
-    const response = await farmGetTypes({})
+    const response = await farmGetTypes({});
     type.value = response.data;
     console.log(response);
-    } catch (error) {
-    
-  }
-}
+  } catch (error) {}
+};
 
 // 根据分类查询
-const getByTypes = () =>{
-  console.log(`当前选中的值为：${selectValue.value}`);
+const getByTypes = () => {
+    console.log(findForm);
+  // console.log(`当前选中的值为：${selectValue.value}`);
+  farmFindByType(findForm).then(res =>{
+    console.log(res);
+    //  list.value = res.data.list;
+  })
+};
+
+// 点击增加
+const showAddForm = () => {
+  addFormVisible.value = true;
+};
+const close = () => {
+  addFormVisible.value = false;
+   operationFormVisible.value = false
+};
+const onCancel = () => {
+  addFormVisible.value = false;
+   operationFormVisible.value = false
+};
+const addFormButton = async () => {
+  addFormVisible.value = false;
+  farmAdd(addForm).then(res =>{
+    if(res.code === 20000){
+    MessagePlugin.success("添加成功");
+    getHouses();
+    }
+
+  })
+ 
+};
+// 删除养殖舍
+const delRow = (row) => {
+  const data = reactive({
+    id:row.id
+  })
+  farmDel(data).then(res => {
+    if(res.code === 20000){
+      MessagePlugin.error("删除成功")
+      getHouses();
+    }
+  })
+};
+
+// 点击出现操作弹窗
+const showOperationForm = (row) =>{
+  operationFormVisible.value = true
+
 }
+const updateRow = (row) =>{
+  const rowData = reactive({
+    id:row.id,
+    growing:operationForm.growing,
+    name:operationForm.name,
+    type:operationForm.type
+  })
+
+}
+
 onMounted(() => {
   getHouses();
   getAllType();
   getByTypes();
-})
+});
 </script>
 <style lang="scss"  scoped>
 .tdesign-demo-block-column {
