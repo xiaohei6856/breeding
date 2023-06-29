@@ -1,5 +1,5 @@
 <template>
-  <div class="tdesign-demo-block-column" style="width: 100%; max-width: 100%">
+<div class="tdesign-demo-block-column" style="width: 100%; max-width: 100%">
     <t-card>
       <div class="label">
         <span style="display: inline-block; padding-top: 10px">分类：</span>
@@ -46,7 +46,6 @@
                 v-for="(item, key) in type"
                 :key="key"
                 :value="item"
-                @click="getByTypes"
                 >{{ item }}</t-option
               >
             </t-select>
@@ -61,7 +60,7 @@
       </t-dialog>
     </t-card>
     <t-card>
-      <t-table :columns="columns" :data="list" :rowKey="list.id">
+      <t-table :columns="columns" width="90%" :data="list" :rowKey="list.id">
         <t-column title="名字" colKey="name"></t-column>
         <t-column title="分类" colKey="type"></t-column>
         <t-column title="创建时间" colKey="time"></t-column>
@@ -76,7 +75,7 @@
           >
             删除
           </t-link>
-          <t-link theme="primary" hover="color" @click="updateRow(row);showOperationForm();" >
+          <t-link theme="primary" hover="color" @click="showOperationForm(row);" >
             操作
           </t-link>
         </template>
@@ -86,7 +85,7 @@
         header="修改养殖舍"
         :on-cancel="onCancel"
         :on-close="close"
-        :on-confirm="addFormButton"
+        :on-confirm="updateRow"
       >
         <t-form :data="operationForm">
           <t-form-item label="养殖舍名称">
@@ -130,7 +129,7 @@ import {
   AddIcon,
 } from "tdesign-icons-vue-next";
 
-import { farmFindAll, farmAdd ,farmDel,farmFindByType} from "@/apis/farmedapi";
+import { farmFindAll, farmAdd ,farmDel,farmFindByType,farmModify} from "@/apis/farmedapi";
 import { farmGetTypes } from "@/apis/farmedapi";
 import { MessagePlugin } from "tdesign-vue-next";
 
@@ -144,7 +143,6 @@ const columns = ref([
 ]);
 
 const type = ref([]);
-// const selectValue = ref("");
 const addFormVisible = ref(false);
 const operationFormVisible = ref(false)
 
@@ -154,6 +152,7 @@ const addForm = reactive({
   type: "",
 });
 const operationForm = reactive({
+  id:0,
   growing: "",
   name: "",
   type: "",
@@ -179,17 +178,15 @@ const getAllType = async () => {
   try {
     const response = await farmGetTypes({});
     type.value = response.data;
-    console.log(response);
+    console.log(response.data);
   } catch (error) {}
 };
 
 // 根据分类查询
 const getByTypes = () => {
     console.log(findForm);
-  // console.log(`当前选中的值为：${selectValue.value}`);
   farmFindByType(findForm).then(res =>{
-    console.log(res);
-    //  list.value = res.data.list;
+    list.value = res.data.list
   })
 };
 
@@ -210,6 +207,9 @@ const addFormButton = async () => {
   farmAdd(addForm).then(res =>{
     if(res.code === 20000){
     MessagePlugin.success("添加成功");
+    addForm.growing = "";
+    addForm.name = "";
+    addForm.type = "";
     getHouses();
     }
 
@@ -232,22 +232,25 @@ const delRow = (row) => {
 // 点击出现操作弹窗
 const showOperationForm = (row) =>{
   operationFormVisible.value = true
+  operationForm.id = row.id
+  operationForm.growing = row.growing;
+  operationForm.name = row.name;
+  operationForm.type = row.type;
 
 }
 const updateRow = (row) =>{
-  const rowData = reactive({
-    id:row.id,
-    growing:operationForm.growing,
-    name:operationForm.name,
-    type:operationForm.type
+  farmModify(operationForm).then(res =>{
+    if (res.code === 20000) {
+       MessagePlugin.success("修改成功");
+        operationFormVisible.value = false;
+       getHouses();
+    }
   })
-
 }
 
 onMounted(() => {
   getHouses();
   getAllType();
-  getByTypes();
 });
 </script>
 <style lang="scss"  scoped>
