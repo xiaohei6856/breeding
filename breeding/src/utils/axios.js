@@ -43,12 +43,12 @@ http.interceptors.response.use(function (response) {
 }, function (error) {
   // 对响应错误做点什么
   // loadingObj.close()
-  if(error.request.status==500){
-    router.push({
-      path:'/login'
-    })
-  }
-    console.log(error);
+  // if(error.request.status==500){
+  //   router.push({
+  //     path:'/login'
+  //   })
+  // }
+  //   console.log(error);
   // return Promise.reject(error);
 });
 // post请求

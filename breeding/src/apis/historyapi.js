@@ -13,13 +13,24 @@ export const historyFindAll = function(params){
 }
 
 /**
- * 条件查询
+ * 种类查询
  * @param {*} params 
  * @returns 
  */
 export const historyFindByCondition = function(params){
     return get({
-        url:`/warning/conditionFind`,
-        params
+        url:`/warning/conditionFind?pageNo=${params.pageNo}&pageSize=${params.pageSize}&type=${params.type}`,
+    })
+}
+
+
+/**
+ * 名字查询
+ * @param {*} params 
+ * @returns 
+ */
+export const historyFindByName = function(params){
+    return get({
+        url:`/warning/conditionFind?pageNo=${params.pageNo}&pageSize=${params.pageSize}&name=${params.name}`,
     })
 }

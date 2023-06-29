@@ -42,7 +42,7 @@ export const farmFindAll = function(params){
  */
 export const farmFindByType = function(params){
     return get({
-        url:`/houses/findByType?pageNo=${params.pageNo}&pageSize=${params.pageSize}&type=${params.type}`, 
+        url:`/houses/findByType?pageNo=${params.pageNo}&pageSize=${params.pageSize}&type=${params.type}`,
     })
 }
 /**
