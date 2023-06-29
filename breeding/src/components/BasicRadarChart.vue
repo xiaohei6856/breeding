@@ -52,6 +52,9 @@ onUnmounted(() => {
 });
 
 const option = reactive({
+  title:{
+    text:"温度"
+  },
   legend: {
     data: ['Allocated Budget', 'Actual Spending']
   },

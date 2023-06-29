@@ -27,6 +27,6 @@ const props = defineProps(['counts'])
     text-align: center;
     font-size: 3rem;
     line-height: 3rem;
-    color: var(--td-backround-card-color);
+    color: var(--td-warning-color-7);
 }
 </style>

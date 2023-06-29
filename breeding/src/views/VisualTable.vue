@@ -15,7 +15,7 @@
               <NumberCard :counts="HouseCount"></NumberCard>
             </div>
             <div class="main-center-top-right">
-              <NumberCard :counts="HouseCount"></NumberCard>
+              <NumberCard :counts="DeviceCount"></NumberCard>
             </div>
           </div>
           <div class="main-center-center">
@@ -51,6 +51,7 @@ import spirits from '../utils/chartformdata/spirits'
 import basicradar from '../utils/chartformdata/basicradar'
 import stackcolumn from '../utils/chartformdata/stackcolumn'
 import { getHouseCount } from '../apis/farmedapi'
+import { getDeviceCount } from '../apis/deviceapi'
 import { ref, reactive, onMounted } from 'vue';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
@@ -82,8 +83,8 @@ function connect() {
     setConnected(true); // 设置连接状态为true
     // 订阅主题'/topic/environment/info'以接收消息
     stompClient.subscribe('/topic/environment/info', function (response) {
-      // messages.push({ id: Date.now(), body: response.body }); // 将接收到的消息添加到messages数组中
-      console.log("response",response);
+      chartdatas.value = JSON.parse(response.body)
+      uploadformat();
     });
   });
 }
@@ -121,12 +122,20 @@ function getHouseCountapi(){
   })
 }
 
+const DeviceCount = reactive({
+  title:'设备总数',
+  data:null
+});
+
+function getDeviceCountapi(){
+  getDeviceCount().then(res=>{
+    DeviceCount.data = res.data
+  })
+}
 // 在组件挂载完成时执行的代码
 onMounted(() => {
   const socket = new SockJS('/api'); // 创建SockJS实例，指定连接的URL为'/api'
   const onMessage = function (event) {
-    // messages.push({ id: Date.now(), body: event.data }); // 将接收到的消息添加到messages数组中
-    // console.log(event);
 
     // 根据换行符分割数据
     const parts = event.data.split('\n\n');
@@ -140,19 +149,22 @@ onMounted(() => {
       setcover(weather.value)
     }else if (upperPart.includes("ENVIRONMENT")) {
       chartdatas.value = JSON.parse(JSON.parse(lowerPart))
-      console.log(JSON.parse(lowerPart));
-      chartdatas.CO2 = stackline(chartdatas.value)
-      chartdatas.noise = transition(chartdatas.value)
-      chartdatas.beam = spirits(chartdatas.value)
-      chartdatas.temperature = basicradar(chartdatas.value)
-      chartdatas.threeitems = stackcolumn(chartdatas.value)
+      uploadformat()
     }
   };
   socket.onmessage = onMessage; // 注册消息处理函数，处理接收到的消息
   connect();
   getHouseCountapi();
+  getDeviceCountapi();
 });
 
+function uploadformat(){
+      chartdatas.CO2 = stackline(chartdatas.value)
+      chartdatas.noise = transition(chartdatas.value)
+      chartdatas.beam = spirits(chartdatas.value)
+      chartdatas.temperature = basicradar(chartdatas.value)
+      chartdatas.threeitems = stackcolumn(chartdatas.value)
+}
 // // 断开与WebSocket服务器的连接的方法
 // function disconnect() {
 //   if (stompClient) {
@@ -182,6 +194,7 @@ onMounted(() => {
   display: flex;
   height: 100%;
   gap: 5px;
+  overflow: hidden;
 }
 .main-left{
   display: flex;
@@ -197,6 +210,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-left-bottom{
   flex: 9;
@@ -204,6 +218,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-center{
   display: flex;
@@ -226,6 +241,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-center-top-right{
   flex: 1;
@@ -233,6 +249,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-center-center{
   flex: 6;
@@ -240,6 +257,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-center-bottom{
   flex: 6;
@@ -247,6 +265,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-right{
   display: flex;
@@ -262,6 +281,7 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 .main-right-bottom{
   flex: 1;
@@ -269,5 +289,6 @@ onMounted(() => {
    /*设置毛玻璃*/
   backdrop-filter: blur(20px) ;
   border-radius: 5px;
+  overflow: hidden;
 }
 </style>

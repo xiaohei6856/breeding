@@ -66,6 +66,9 @@ const spirit ='https://xiaohei-1313160286.cos.ap-chengdu.myqcloud.com/img/weathe
 var maxData = 3000;
 
 const option = reactive({
+  title:{
+    text:"光照强度"
+  },
   tooltip: {},
   xAxis: {
     max: maxData,

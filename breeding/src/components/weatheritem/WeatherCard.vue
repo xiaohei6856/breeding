@@ -1,5 +1,5 @@
 <template>
-  <t-card :title="props.weatherdata.date" hover-shadow :bordered="false" :style="{ height: '100%' ,flex:1,backgroundColor:'transparent'}" :cover="props.weatherdata.cover">
+  <t-card :title="formatdata(props.weatherdata.date)" hover-shadow :bordered="false" :style="{display:'flex',flexDirection:'column' ,height: '100%' ,flex:1,backgroundColor:'transparent'}" :cover="props.weatherdata.cover">
     <template #actions>
       {{props.weatherdata.city}}
     </template>
@@ -16,8 +16,23 @@
   </t-card>
 </template>
 <script setup >
-
+import formatdata from '../../utils/formatdata'
 
 const props = defineProps(['weatherdata'])
 
 </script>
+<style scoped>
+:deep(.t-card__header){
+  flex: 1;
+}
+:deep(.t-card__cover){
+  flex: 2;
+}
+:deep(.t-card__footer){
+  flex: 1;
+}
+:deep(.t-card__cover img){
+  width: 70%;
+  margin: 0 auto;
+}
+</style>

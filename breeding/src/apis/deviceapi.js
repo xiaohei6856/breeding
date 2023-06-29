@@ -54,3 +54,12 @@ export const getAllDevice = function(params){
         params
     })
 }
+
+/**
+ * 获取所有设备
+ */
+ export const getDeviceCount = function(){
+    return get({
+        url:`/device/getDeviceCount`,
+    })
+}
