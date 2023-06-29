@@ -1,16 +1,16 @@
 <template>
   <div class="demo-card">
-    <t-card :title="title" :bordered="false" hover-shadow :style="{display: 'flex',flexDirection: 'column', height: '100%',flex:1,backgroundColor:'transparent'}">
+    <t-card :title="props.counts.title" :bordered="false" hover-shadow :style="{display: 'flex',flexDirection: 'column', height: '100%',flex:1,backgroundColor:'transparent'}">
         <div class="card-body-font">
-            {{ infoMessage }}
+            {{ props.counts.data }}
         </div>
     </t-card>
   </div>
 </template>
 <script setup >
 
-const title = '标题';
-const infoMessage = `90`;
+const props = defineProps(['counts'])
+
 </script>
 <style scoped>
 .demo-card {
@@ -25,7 +25,8 @@ const infoMessage = `90`;
 }
 .card-body-font{
     text-align: center;
-    font-size: 4rem;
-    line-height: 4rem;
+    font-size: 3rem;
+    line-height: 3rem;
+    color: var(--td-backround-card-color);
 }
 </style>

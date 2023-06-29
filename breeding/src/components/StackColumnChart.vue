@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref,reactive,onMounted,onUnmounted  } from 'vue';
+import { ref,reactive,onMounted,onUnmounted,watch  } from 'vue';
 import * as echarts from 'echarts/core';
 import {
   TooltipComponent,
@@ -29,6 +29,19 @@ let myChart = null;
 let resizeObserver = null;
 let resizing = false; // 标志位，用于跟踪是否正在调整中
 
+const props = defineProps(['options'])
+
+watch(props,(news,old)=>{
+    console.log(13213213213213213212123132);
+    console.log(option.series,news.options.series);
+    console.log(option.xAxis[0],news.options.xAxis);
+    option.series = news.options.series
+    option.xAxis[0] = news.options.xAxis
+    // option.legend = news.options.legend
+    resizeObserver.disconnect();
+    change()
+})
+
 const change = ()=>{
     const myChart = echarts.init(chartDom.value);
     option && myChart.setOption(option);
@@ -46,7 +59,6 @@ const change = ()=>{
 }
 
 onMounted(()=>{
-
     change();
 })
 onUnmounted(() => {
@@ -70,7 +82,7 @@ const option = reactive({
     xAxis: [
         {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
         }
     ],
     yAxis: [
@@ -120,12 +132,6 @@ const option = reactive({
         data: [862, 1018, 964, 1026, 1679, 1600, 1570],
         emphasis: {
             focus: 'series'
-        },
-        markLine: {
-            lineStyle: {
-            type: 'dashed'
-            },
-            data: [[{ type: 'min' }, { type: 'max' }]]
         }
         },
         {

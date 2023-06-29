@@ -90,6 +90,7 @@ watch(props,(news,old)=>{
     option.series = news.options.series
     option.xAxis = news.options.xAxis
     option.legend = news.options.legend
+    resizeObserver.disconnect();
     change()
 })
 

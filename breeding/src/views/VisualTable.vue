@@ -6,16 +6,16 @@
             <Weather :weather="weather"></Weather>
           </div>
           <div class="main-left-bottom">
-            <StackColumnChart></StackColumnChart>
+            <StackColumnChart :options="chartdatas.threeitems"></StackColumnChart>
           </div>
         </div>
         <div class="main-center">
           <div class="main-center-top">
             <div class="main-center-top-left">
-              <NumberCard></NumberCard>
+              <NumberCard :counts="HouseCount"></NumberCard>
             </div>
             <div class="main-center-top-right">
-              <NumberCard></NumberCard>
+              <NumberCard :counts="HouseCount"></NumberCard>
             </div>
           </div>
           <div class="main-center-center">
@@ -27,7 +27,7 @@
         </div>
         <div class="main-right">
           <div class="main-right-top">
-            <BasicRadarChart></BasicRadarChart>
+            <BasicRadarChart :options="chartdatas.temperature"></BasicRadarChart>
           </div>
           <div class="main-right-bottom">
             <TransitionBetweenChart :options="chartdatas.noise"></TransitionBetweenChart>
@@ -48,6 +48,9 @@ import TransitionBetweenChart from '../components/TransitionBetweenChart'
 import stackline from '../utils/chartformdata/stackline.js'
 import transition from '../utils/chartformdata/transition.js'
 import spirits from '../utils/chartformdata/spirits'
+import basicradar from '../utils/chartformdata/basicradar'
+import stackcolumn from '../utils/chartformdata/stackcolumn'
+import { getHouseCount } from '../apis/farmedapi'
 import { ref, reactive, onMounted } from 'vue';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
@@ -59,7 +62,9 @@ const weather =  ref([]);
 const chartdatas = reactive({
   CO2:null,
   noise:null,
-  beam:null
+  beam:null,
+  temperature:null,
+  threeitems:null
 });
 
 let stompClient = null; // Stomp客户端实例
@@ -105,6 +110,17 @@ function setcover(weatherData ){
 });
 }
 
+
+const HouseCount = reactive({
+  title:'养殖舍总数',
+  data:null
+});
+function getHouseCountapi(){
+  getHouseCount().then(res=>{
+    HouseCount.data = res.data
+  })
+}
+
 // 在组件挂载完成时执行的代码
 onMounted(() => {
   const socket = new SockJS('/api'); // 创建SockJS实例，指定连接的URL为'/api'
@@ -128,10 +144,13 @@ onMounted(() => {
       chartdatas.CO2 = stackline(chartdatas.value)
       chartdatas.noise = transition(chartdatas.value)
       chartdatas.beam = spirits(chartdatas.value)
+      chartdatas.temperature = basicradar(chartdatas.value)
+      chartdatas.threeitems = stackcolumn(chartdatas.value)
     }
   };
   socket.onmessage = onMessage; // 注册消息处理函数，处理接收到的消息
   connect();
+  getHouseCountapi();
 });
 
 // // 断开与WebSocket服务器的连接的方法

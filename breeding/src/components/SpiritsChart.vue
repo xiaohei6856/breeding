@@ -30,12 +30,11 @@ let resizing = false; // 标志位，用于跟踪是否正在调整中
 const props = defineProps(['options'])
 
 watch(props,(news,old)=>{
-  console.log(option.series.data);
-  console.log(news.options.seriesData);
     option.series[0].data = news.options.seriesData
     option.series[1].data = news.options.seriesData
     option.yAxis = news.options.yAxis
     option.legend = news.options.legend
+    resizeObserver.disconnect();
     change()
 })
 const change = ()=>{
