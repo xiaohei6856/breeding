@@ -25,6 +25,27 @@
     </t-card>
     <t-card style="width:100%;overflow-x:scroll;">
       <t-table :columns="columns" :data="list" :rowKey="list.id">
+          <template #ammonia={row}>
+      {{ formatValue(row.ammonia) }}
+    </template>
+      <template #beam={row}>
+      {{ formatValue(row.beam) }}
+    </template>
+      <template #co2={row}>
+      {{ formatValue(row.co2) }}
+    </template>
+      <template #humidity={row}>
+      {{ formatValue(row.humidity) }}
+    </template>  
+    <template #noise={row}>
+      {{ formatValue(row.noise) }}
+    </template>
+        <template #oxygen={row}>
+      {{ formatValue(row.oxygen) }}
+    </template>
+        <template #temperature={row}>
+      {{ formatValue(row.temperature) }}
+    </template>
       </t-table>
     </t-card>
   </div>
@@ -66,9 +87,8 @@ const getAllType = async () => {
   } catch (error) {}
 };
 const tableRef = ref(null);
- const renderValue = (text) => {
-      const formattedValue = Number(text).toFixed(2);
-      return `<span>${formattedValue}</span>`;
+ const formatValue = (value) => {
+      return parseFloat(value).toFixed(2);
     };
 const columns = ref([
   { title: "名字", colKey: "name" ,width:"80px"},
@@ -78,10 +98,9 @@ const columns = ref([
   { title: "光照强度（Lux）", colKey: "beam",width:"140px" },
   { title: "CO2浓度（ppm）", colKey: "co2",width:"140px" },
   { title: "湿度（%）", colKey: "humidity" ,width:"140px"},
-  { title: "音频水平（db）", colKey: "noise" ,width:"140px"},
-  { title: "氧气浓度（%）", colKey: "oxygen" ,width:"140px"},
-  { title: "温度（℃）", colKey: "temperature" ,width:"140px",  customRender: (text) => {
-            return parseFloat(text).toFixed(2);} },
+  { title: "音频水平（db）", colKey: "noise" ,width:"130px"},
+  { title: "氧气浓度（%）", colKey: "oxygen" ,width:"130px"},
+  { title: "温度（℃）", colKey: "temperature" ,width:"130px"},
   { title: "警告", colKey: "warningType" ,width:"150px"},
 ]);
   const formatNumber = (number) => {

@@ -68,9 +68,7 @@
             删除
           </t-link>
         </template>
-        <template #default="{ row }">
       <!-- <td>{{ row.ammonia.toFixed(2) }}</td> -->
-    </template>
       </t-table>
     </t-card>
   </div>
@@ -85,6 +83,7 @@ import {
   ErrorCircleFilledIcon,
   CheckCircleFilledIcon,
   CloseCircleFilledIcon,
+  AddIcon,
 } from "tdesign-icons-vue-next";
 
 const typeList = ref([]);
