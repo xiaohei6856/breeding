@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { ref,reactive,onMounted,onUnmounted  } from 'vue';
+import { ref,reactive,onMounted,onUnmounted,watch  } from 'vue';
 import * as echarts from 'echarts/core';
 import {
   TitleComponent,
@@ -26,7 +26,72 @@ echarts.use([
   CanvasRenderer,
   UniversalTransition
 ]);
+const option = reactive({
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data: ['养鸡的', '测试', '猪圈', '猪圈']
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    toolbox: {
+        feature: {
+        saveAsImage: {}
+        }
+    },
+    xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: ['18:24', '18:34', '18:44', '18:54', '19:04', '19:14']
+    },
+    yAxis: {
+      type: 'value',
+      name: 'CO2浓度',
+      position: 'left',
+      axisLabel: {
+        formatter: '{value} ppm'
+      }
+    },
+    series: [
+        {
+        name: '养鸡的',
+        type: 'line',
+        stack: '0',
+        data: [2398, 2092, 1840, 1620, 2383, 1983]
+        },
+        {
+        name: '测试',
+        type: 'line',
+        stack: '1',
+        data: [2398, 2092, 1840, 1620, 2383, 1983]
+        },
+        {
+        name: '猪圈',
+        type: 'line',
+        stack: '2',
+        data: [2070, 2131, 1767, 2100, 913, 1849]
+        },
+        {
+        name: '猪圈',
+        type: 'line',
+        stack: '3',
+        data: [1481, 1595, 2199, 2142, 1965, 2201]
+        }
+    ]
+    })
+const props = defineProps(['options'])
 
+watch(props,(news,old)=>{
+    option.series = news.options.series
+    option.xAxis = news.options.xAxis
+    option.legend = news.options.legend
+    change()
+})
 
 const chartDom = ref();
 let myChart = null;
@@ -55,72 +120,13 @@ const change = ()=>{
 }
 
 onMounted(()=>{
-
     change();
 })
 onUnmounted(() => {
     resizeObserver.disconnect();
 });
 
-const option = reactive({
-    tooltip: {
-        trigger: 'axis'
-    },
-    legend: {
-        data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
-    },
-    grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
-    },
-    toolbox: {
-        feature: {
-        saveAsImage: {}
-        }
-    },
-    xAxis: {
-        type: 'category',
-        boundaryGap: false,
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    },
-    yAxis: {
-        type: 'value'
-    },
-    series: [
-        {
-        name: 'Email',
-        type: 'line',
-        stack: 'Total',
-        data: [120, 132, 101, 134, 90, 230, 210]
-        },
-        {
-        name: 'Union Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [220, 182, 191, 234, 290, 330, 310]
-        },
-        {
-        name: 'Video Ads',
-        type: 'line',
-        stack: 'Total',
-        data: [150, 232, 201, 154, 190, 330, 410]
-        },
-        {
-        name: 'Direct',
-        type: 'line',
-        stack: 'Total',
-        data: [320, 332, 301, 334, 390, 330, 320]
-        },
-        {
-        name: 'Search Engine',
-        type: 'line',
-        stack: 'Total',
-        data: [820, 932, 901, 934, 1290, 1330, 1320]
-        }
-    ]
-    })
+
 
 </script>
 
