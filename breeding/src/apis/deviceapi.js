@@ -50,7 +50,7 @@ export const deviceFindByType = function(params){
  */
 export const getAllDevice = function(params){
     return get({
-        url:`/device/getAllDevices`,
+        url:`/device/getAllDevices?pageNo=${params.pageNo}&pageSize=${params.pageSize}`,
         params
     })
 }

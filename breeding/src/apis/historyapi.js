@@ -7,8 +7,7 @@ import { get } from "@/utils/axios";
  */
 export const historyFindAll = function(params){
     return get({
-        url:`/warning/getAll`,
-        params
+        url:`/warning/getAll?pageNo=${params.pageNo}&pageSize=${params.pageSize}`,
     })
 }
 
@@ -19,7 +18,7 @@ export const historyFindAll = function(params){
  */
 export const historyFindByCondition = function(params){
     return get({
-        url:`/warning/conditionFind?pageNo=${params.pageNo}&pageSize=${params.pageSize}&type=${params.type}`,
+        url:`/warning/conditionFind?pageNo=${params.pageNo}&pageSize=${params.pageSize}&type=${params.type}&name=${params.name}`,
     })
 }
 

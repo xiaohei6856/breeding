@@ -31,8 +31,7 @@ export const farmDel = function(params){
  */
 export const farmFindAll = function(params){
     return get({
-        url:`/houses/findAllHouses`,
-        params
+        url:`/houses/findAllHouses?pageNo=${params.pageNo}&pageSize=${params.pageSize}`,
     })
 }
 /**

@@ -60,7 +60,7 @@
       </t-dialog>
     </t-card>
     <t-card>
-      <t-table :columns="columns" width="90%" :data="list" :rowKey="list.id">
+      <t-table :columns="columns" width="90%" :data="list" :rowKey="list.id" style="margin-bottom:15px;">
         <t-column title="名字" colKey="name"></t-column>
         <t-column title="分类" colKey="type"></t-column>
         <t-column title="创建时间" colKey="time"></t-column>
@@ -80,6 +80,14 @@
           </t-link>
         </template>
       </t-table>
+            <t-pagination
+      :total="total"
+      :current="pageForm.pageNo"
+      :page-size="pageForm.pageSize"
+       @page-size-change="onPageSizeChange"
+       @current-change="onCurrentChange"
+      @change="handlePaginationChange"
+    />
         <t-dialog
         v-model:visible="operationFormVisible"
         header="修改养殖舍"
@@ -145,7 +153,12 @@ const columns = ref([
 const type = ref([]);
 const addFormVisible = ref(false);
 const operationFormVisible = ref(false)
-
+const total = ref(0);
+const currentPage = ref(1)
+const pageForm = reactive({
+  pageNo:1, //当前页码数
+  pageSize:10 //每页显示的记录数
+})
 const addForm = reactive({
   growing: "",
   name: "",
@@ -162,15 +175,39 @@ const findForm = reactive({
   pageSize:20,
   type:""
 })
+
+const handlePaginationChange = (pageInfo) =>{
+  const page = reactive({
+    pageNo:pageInfo.current,
+    pageSize:pageInfo.pageSize,
+    type:findForm.type
+  })
+   if (page.type === "") {
+    farmFindAll(page).then((res) => {
+      list.value = res.data.list;
+      total.value = res.data.total;
+    });
+  } else {
+    farmFindByType(page).then((res) => {
+      list.value = res.data;
+      total.value = res.data.length;
+    });
+  }
+}
+const onPageSizeChange  = (size) =>{
+  pageForm.pageSize = size;
+    findForm.pageSize = size;
+}
+const onCurrentChange = (index,pageInfo) => {
+      findForm.pageNo = index
+   pageForm.pageNo = index
+}
 // 查询所有数据
 const getHouses = async () => {
-  try {
-    const response = await farmFindAll({});
-    list.value = response.data.list;
-    console.log(response.data.list);
-  } catch (error) {
-    console.log(error);
-  }
+  farmFindAll(pageForm).then(res =>{
+    list.value = res.data.list;
+    total.value = res.data.total;
+  })
 };
 
 // 查询所有类型
@@ -187,6 +224,7 @@ const getByTypes = () => {
     console.log(findForm);
   farmFindByType(findForm).then(res =>{
     list.value = res.data.list
+    total.value = res.data.total;
   })
 };
 
