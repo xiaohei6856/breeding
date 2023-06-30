@@ -78,3 +78,13 @@ export const farmModify = function(data){
         data
     })
 }
+/**
+ * 获取养殖设数量
+ * @param {*} params 
+ * @returns 
+ */
+ export const getHouseCount = function(){
+    return get({
+        url:`/houses/getHouseCount`,
+    })
+}

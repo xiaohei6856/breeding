@@ -285,6 +285,7 @@ body{
     color: var(--td-text-color-primary);
     overflow: auto;
     padding: 25px;
+    overflow: hidden;
     /* justify-content: center;
     align-items: center;
     font-size: 6vw;
