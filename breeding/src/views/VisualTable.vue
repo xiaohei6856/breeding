@@ -50,11 +50,13 @@ import transition from '../utils/chartformdata/transition.js'
 import spirits from '../utils/chartformdata/spirits'
 import basicradar from '../utils/chartformdata/basicradar'
 import stackcolumn from '../utils/chartformdata/stackcolumn'
+import warning from '../utils/warning'
 import { getHouseCount } from '../apis/farmedapi'
 import { getDeviceCount } from '../apis/deviceapi'
 import { ref, reactive, onMounted } from 'vue';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
+import { NotifyPlugin } from 'tdesign-vue-next';
 
 const connected = ref(false); // 用于表示连接状态的响应式变量
 const content = ref(''); // 用于存储发送的消息内容的响应式变量
@@ -164,6 +166,17 @@ function uploadformat(){
       chartdatas.beam = spirits(chartdatas.value)
       chartdatas.temperature = basicradar(chartdatas.value)
       chartdatas.threeitems = stackcolumn(chartdatas.value)
+      console.log(warning(chartdatas.value));
+      warning(chartdatas.value).filteredData.forEach(warndata => {
+        NotifyPlugin.warning({
+            title: warndata.warningType, 
+            content: warndata.warningTypes.toString() , 
+            footer:warndata.name+warndata.time,
+            duration: 10000 ,
+            offset: [0, 50],
+            closeBtn: true,
+          })
+      }); 
 }
 // // 断开与WebSocket服务器的连接的方法
 // function disconnect() {
